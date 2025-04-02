@@ -3,6 +3,7 @@
 # throughout this file
 import pygame
 from constants import *
+from player import Player
 
 def main():
    pygame.init()
@@ -16,6 +17,9 @@ def main():
    clock = pygame.time.Clock()  # Objeto para controlar los FPS
    dt = 0  # Variable para almacenar el tiempo delta (tiempo entre frames)
 
+   # Instantiate the Player object at the center of the screen
+   player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
    running = True
    while running:
       # Manejo de eventos
@@ -23,11 +27,15 @@ def main():
          if event.type == pygame.QUIT:
             running = False
       
+
       # Llenar la pantalla con color negro
       screen.fill("black")
       
       # (Aquí iría la lógica de tu juego, actualización de objetos, etc.)
       
+      # Dibujar el jugador
+      player.draw(screen)
+
       # Actualizar la pantalla (siempre al final del bucle)
       pygame.display.flip()
 

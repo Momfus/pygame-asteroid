@@ -1,49 +1,65 @@
-# this allows us to use code from
-# the open-source pygame library
-# throughout this file
 import pygame
 from constants import *
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
 
 def main():
-   pygame.init()
-   screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.init()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-   print("Starting Asteroids!")
-   print(f"Screen width: {SCREEN_WIDTH}")
-   print(f"Screen height: {SCREEN_HEIGHT}")
+    print("Starting Asteroids!")
+    print(f"Screen width: {SCREEN_WIDTH}")
+    print(f"Screen height: {SCREEN_HEIGHT}")
 
-   # Crear el objeto Clock y variable dt (ANTES del gameloop)
-   clock = pygame.time.Clock()  # Objeto para controlar los FPS
-   dt = 0  # Variable para almacenar el tiempo delta (tiempo entre frames)
+    # Create pygame sprite groups
+    updatable = pygame.sprite.Group()  # Cambiado a Group
+    drawable = pygame.sprite.Group()   # Cambiado a Group
+    asteroids = pygame.sprite.Group()
 
-   # Instantiate the Player object at the center of the screen
-   player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    # Set static containers
+    Asteroid.containers = (asteroids, updatable, drawable)
+    Player.containers = (updatable, drawable)
+    AsteroidField.containers = (updatable,)
 
-   running = True
-   while running:
-      # Manejo de eventos
-      for event in pygame.event.get():
-         if event.type == pygame.QUIT:
-            running = False
-      
+    # Create the Clock object and dt variable (BEFORE the game loop)
+    clock = pygame.time.Clock()
+    dt = 0  # Variable to store delta time (time between frames)
 
-      # Llenar la pantalla con color negro
-      screen.fill("black")
-      
-      # (Aquí iría la lógica de tu juego, actualización de objetos, etc.)
-      
-      # Dibujar el jugador
-      player.draw(screen)
+    # Instantiate the Player object at the center of the screen
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    updatable.add(player)
+    drawable.add(player)
 
-      # Actualizar la pantalla (siempre al final del bucle)
-      pygame.display.flip()
+    # Instantiate the AsteroidField object
+    asteroid_field = AsteroidField()
 
-      # Controlar FPS y actualizar dt (DENTRO del gameloop, al final)
-      dt = clock.tick(60) / 1000  # Controlar los FPS a 60 (60 FPS)
+    running = True
+    while running:
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-   # Salir del juego
-   pygame.quit()
+        # Update all updatable objects
+        for obj in updatable:
+            obj.update(dt)
+
+        # Fill the screen with black color
+        screen.fill("black")
+
+        # Draw all drawable objects
+        for obj in drawable:
+            obj.draw(screen)
+
+        # Update the screen (always at the end of the loop)
+        pygame.display.flip()
+
+        # Control FPS and update dt (INSIDE the game loop, at the end)
+        dt = clock.tick(60) / 1000  # Cap FPS to 60 (60 FPS)
+
+    # Exit the game
+    pygame.quit()
 
 if __name__ == "__main__":
-   main()
+    main()
